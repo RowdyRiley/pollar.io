@@ -4,6 +4,38 @@
 [v-cloak] {
      display: none;
 }
+
+.pollarTitle {
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 128px;
+    line-height: 155px;
+    margin-bottom: 50px;
+    color: #000000;
+  }
+
+#question {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 100px;
+}
+
+#answers {
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 100px;
+  padding: 0 350px;
+}
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 </style>
 
 
@@ -12,17 +44,14 @@
 
   <h1 class="pollarTitle">Pollar.io</h1>
 
-  <div class="box">
-    Answer 1
-  </div>
-  <div class="box">
-    Answer 2
-  </div>
-  <div class="box">
-    Answer 3
-  </div>
-  <div class="box">
-    Answer 4
+  <div class="centered-content" id="vue-target" v-cloak>
+    <div id="question">Question of the day!</div>
+    <div id="answers">
+      <div class="answer">Answer 1</div>
+      <div class="answer">Answer 2</div>
+      <div class="answer">Answer 3</div>
+      <div class="answer">Answer 4</div>
+    </div>
   </div>
 
 </div>
