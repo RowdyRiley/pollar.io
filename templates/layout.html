@@ -8,8 +8,28 @@
     <link rel="stylesheet" href="css/bulma.css">
     <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.css">
     [[block page_head]]<!-- individual pages can customize header here -->[[end]]
+    
+    <!-- Styling added here for the background color and "Pollar.io" header text -->
+    <style>
+      html, body {
+        height: 100%;
+      }
+      .hero.is-fullheight {
+        height: 100%;
+      }
+      .hero-body {
+        flex-grow: 1;
+      }
+      .custom-background {
+        background-color: #FCF9F2;
+      }
+
+
+    </style>
+<!-- Styling added here for the background color and "Pollar.io" header text -->
+
   </head>
-  <body>
+  <body class="custom-background">
     <!-- Navigation bar -->
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
@@ -17,7 +37,7 @@
           Learn py4web
           <!-- <img class="logo" width="150" src="images/site_icon.png"> -->
         </a>
-
+        
 
         <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="the-navbar-menu"
            onclick="this.classList.toggle('is-active');document.getElementById(this.dataset.target).classList.toggle('is-active');">
@@ -60,12 +80,14 @@
     <!-- beginning of HTML inserted by extending template -->
     [[include]]
     <!-- end of HTML inserted by extending template -->
-    <footer class="footer">
+
+    <!-- <footer class="footer">
       <div class="content has-text-centered">
         Made with <a href="https://py4web.com">py4web</a>.
         <a href="https://learn-py4web.github.io">Learn py4web!</a>
       </div>
-    </footer>
+    </footer> -->
+
   </body>
   <script src="js/sugar.min.js"></script>
   <script src="js/axios.min.js"></script>
