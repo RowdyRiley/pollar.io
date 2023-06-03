@@ -43,16 +43,17 @@
   <!-- Put here your Vue.js template -->
 
   <h1 class="pollarTitle">Pollar.io</h1>
-
-  <div class="centered-content" id="vue-target" v-cloak>
-    <div id="question">Question of the day!</div>
-    <div id="answers">
-      <div class="answer">Answer 1</div>
-      <div class="answer">Answer 2</div>
-      <div class="answer">Answer 3</div>
-      <div class="answer">Answer 4</div>
+  <template v-for="r in qa">
+    <div class="centered-content" id="vue-target" v-cloak>
+      <div id="question">{{r.question}}</div>
+      <a id="answers" href="[[=URL('second_page')]]">
+        <button class="answer button is-link">{{r.answer1}}</button>
+        <button class="answer button is-danger">{{r.answer2}}</button>
+        <button class="answer button is-success">{{r.answer3}}</button>
+        <button class="answer button is-warning">{{r.answer4}}</button>
+      </a>
     </div>
-  </div>
+  </template>
 
 </div>
 
@@ -61,6 +62,7 @@
 <!-- Loads the index-specific js for Vue -->
 <script>
   let my_callback_url = "[[=XML(my_callback_url)]]";
+  let get_qa_url = "[[=XML(get_qa_url)]]";
 </script>
 <script src="js/index.js"></script>
 [[end]]

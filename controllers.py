@@ -52,6 +52,7 @@ def index():
     return dict(
         # COMPLETE: return here any signed URLs you need.
         my_callback_url = URL('my_callback', signer=url_signer),
+        get_qa_url = URL('get_qa', signer=url_signer),
     )
 
 @action('get_zip', method=["GET", "POST"])
@@ -62,3 +63,15 @@ def get_zip():
     if form.accepted:
         redirect(URL('index'))
     return dict(form=form)
+
+@action("get_qa")
+@action.uses(db, auth.user, url_signer.verify())
+def get_qa():
+    question_answer_database = db(db.qa).select().as_list()
+    return dict(qa=question_answer_database)
+
+@action("second_page")
+@action.uses('second_page.html', db, auth.user, url_signer)
+def second_page():
+    question_answer_database = db(db.qa).select().as_list()
+    return dict(qa=question_answer_database)
