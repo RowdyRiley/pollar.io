@@ -30,13 +30,35 @@ from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
 from .models import get_user_email
+from py4web.utils.form import Form, FormStyleBulma
 
 url_signer = URLSigner(session)
 
 @action('index')
-@action.uses('index.html', db, auth, url_signer)
+@action.uses('index.html', db, auth.user, url_signer)
 def index():
+    #get the id of the current user
+    current_user_id = auth.current_user.get("id")
+    #Get the zip code of the user
+    user_zip = db(db.zip_codes.user_id == current_user_id).select().first()
+
+    #Check if there is a zipcode for the user 
+    if user_zip:
+        #There is a zip_code code so just print the user zip
+        print(user_zip)
+    else:
+        #Otherwise go to the get zip action
+        redirect(URL('get_zip')) 
     return dict(
         # COMPLETE: return here any signed URLs you need.
         my_callback_url = URL('my_callback', signer=url_signer),
     )
+
+@action('get_zip', method=["GET", "POST"])
+@action.uses('get_zip.html', db, url_signer, auth.user)
+def get_zip():
+    #This just creates a form and sends it to the user to fill out and then takes them back to index.
+    form = Form(db.zip_codes, csrf_session=session, formstyle=FormStyleBulma)
+    if form.accepted:
+        redirect(URL('index'))
+    return dict(form=form)
