@@ -40,12 +40,12 @@ def index():
     #get the id of the current user
     current_user_id = auth.current_user.get("id")
     #Get the zip code of the user
-    user_zip = db(db.zip_codes.user_id == current_user_id).select().first()
+    user_state = db(db.userStates.user_id == current_user_id).select().first()
 
     #Check if there is a zipcode for the user 
-    if user_zip:
+    if user_state:
         #There is a zip_code code so just print the user zip
-        print(user_zip)
+        print(user_state)
     else:
         #Otherwise go to the get zip action
         redirect(URL('get_zip')) 
@@ -53,16 +53,15 @@ def index():
         # COMPLETE: return here any signed URLs you need.
         my_callback_url = URL('my_callback', signer=url_signer),
         get_qa_url = URL('get_qa', signer=url_signer),
+        get_state_url = URL('get_state', signer=url_signer),
     )
 
 @action('get_zip', method=["GET", "POST"])
 @action.uses('get_zip.html', db, url_signer, auth.user)
 def get_zip():
-    #This just creates a form and sends it to the user to fill out and then takes them back to index.
-    form = Form(db.zip_codes, csrf_session=session, formstyle=FormStyleBulma)
-    if form.accepted:
-        redirect(URL('index'))
-    return dict(form=form)
+    return dict(
+        get_state_url = URL('get_state', signer=url_signer),
+    )
 
 @action("get_qa")
 @action.uses(db, auth.user, url_signer.verify())
@@ -75,3 +74,13 @@ def get_qa():
 def second_page():
     question_answer_database = db(db.qa).select().as_list()
     return dict(qa=question_answer_database)
+
+@action('get_state', method=["GET", "POST"])
+@action.uses(db, url_signer, auth.user)
+def get_state():
+    stateName = request.json.get("stateName")
+    db.userStates.insert(
+            stateName = stateName,
+        )
+    redirect(URL('index')) 
+    return "ok"
