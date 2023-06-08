@@ -48,7 +48,7 @@ def index():
         print(user_state)
     else:
         #Otherwise go to the get zip action
-        redirect(URL('get_zip')) 
+        redirect(URL('get_state'))
     return dict(
         # COMPLETE: return here any signed URLs you need.
         my_callback_url = URL('my_callback', signer=url_signer),
@@ -56,31 +56,36 @@ def index():
         get_state_url = URL('get_state', signer=url_signer),
     )
 
-@action('get_zip', method=["GET", "POST"])
-@action.uses('get_zip.html', db, url_signer, auth.user)
-def get_zip():
-    return dict(
-        get_state_url = URL('get_state', signer=url_signer),
-    )
-
 @action("get_qa")
 @action.uses(db, auth.user, url_signer.verify())
 def get_qa():
+    #Select all of the questions from the database and return it.
     question_answer_database = db(db.qa).select().as_list()
     return dict(qa=question_answer_database)
 
 @action("second_page")
 @action.uses('second_page.html', db, auth.user, url_signer)
 def second_page():
+    #Does the same thing as get_qa for now because I can't just return ok without it ruining the html.
     question_answer_database = db(db.qa).select().as_list()
     return dict(qa=question_answer_database)
 
-@action('get_state', method=["GET", "POST"])
-@action.uses(db, url_signer, auth.user)
+@action('get_state')
+@action.uses('get_state.html', db, url_signer, auth.user)
 def get_state():
+    #This is doing the same thing as index because we have two js files. 
+    return dict(
+        get_state_url = URL('insert_state', signer=url_signer),
+    )
+
+@action('insert_state', method="POST")
+@action.uses(db, url_signer.verify(), auth.user)
+def get_state():
+    #Gets the stateName from the js and then inserts it into the database.
     stateName = request.json.get("stateName")
-    db.userStates.insert(
+    newState = db.userStates.insert(
             stateName = stateName,
         )
-    redirect(URL('index')) 
-    return "ok"
+    #Right now index is not being redirected.
+    redirect(URL('index'))
+    return dict(newState)

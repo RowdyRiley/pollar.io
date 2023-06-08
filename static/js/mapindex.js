@@ -4,8 +4,8 @@ function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: 37.0902, lng: -95.7129 }, // Center on the United States
     zoom: 4.8, // Adjust the zoom level as per your preference
-    disableDefaultUI: true, // Disable default map controls
-    gestureHandling: "none", // Disable map panning and zooming
+    //disableDefaultUI: true, // Disable default map controls
+    //gestureHandling: "none", // Disable map panning and zooming
     styles: [
       {
         featureType: "administrative",
@@ -122,7 +122,7 @@ function initMap() {
     // Retrieve the selected state feature
     const stateName = event.feature.getProperty('NAME');
 
-    // Do something with the selected state (e.g., display it, perform an action)
+    // Goes to the controller and sends it the stateName to insert into the database. 
     axios.post(get_state_url, {stateName: stateName}).then(function (response) {
       console.log('Selected state:', stateName);
       });

@@ -10,7 +10,9 @@ let init = (app) => {
     // This is the Vue data.
     app.data = {
         // Complete as you see fit.
+        //Contains all the database questions
         qa: [],
+        //This should hold only a single question so it can be displayed to the user.
         single_qa: [],
     };
 
@@ -21,6 +23,7 @@ let init = (app) => {
         return a;
     };
 
+    //This will go to the controller and gets the question database and sets it up in vue as well.
     app.get_qa = function () {
         axios.get(get_qa_url,).then(function (response) {
             app.enumerate(response.data.qa);
@@ -55,3 +58,4 @@ let init = (app) => {
 // This takes the (empty) app object, and initializes it,
 // putting all the code i
 init(app);
+
