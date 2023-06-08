@@ -4,6 +4,38 @@
 [v-cloak] {
      display: none;
 }
+
+.pollarTitle {
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 128px;
+    line-height: 155px;
+    margin-bottom: 50px;
+    color: #000000;
+  }
+
+#question {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 100px;
+}
+
+#answers {
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 100px;
+  padding: 0 350px;
+}
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 </style>
 
 
@@ -12,18 +44,17 @@
 
   <h1 class="pollarTitle">Pollar.io</h1>
 
-  <div class="box">
-    Answer 1
-  </div>
-  <div class="box">
-    Answer 2
-  </div>
-  <div class="box">
-    Answer 3
-  </div>
-  <div class="box">
-    Answer 4
-  </div>
+  <template v-for="r in qa">
+    <div class="centered-content" id="vue-target" v-cloak>
+      <div id="question">{{r.question}}</div>
+      <a id="answers" href="[[=URL('second_page')]]">
+        <button class="answer button is-link">{{r.answer1}}</button>
+        <button class="answer button is-danger">{{r.answer2}}</button>
+        <button class="answer button is-success">{{r.answer3}}</button>
+        <button class="answer button is-warning">{{r.answer4}}</button>
+      </a>
+    </div>
+  </template>
 
 </div>
 
@@ -32,6 +63,8 @@
 <!-- Loads the index-specific js for Vue -->
 <script>
   let my_callback_url = "[[=XML(my_callback_url)]]";
+  let get_qa_url = "[[=XML(get_qa_url)]]";
+  let get_state_url = "[[=XML(get_state_url)]]";
 </script>
 <script src="js/index.js"></script>
 [[end]]

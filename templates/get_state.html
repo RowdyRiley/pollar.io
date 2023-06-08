@@ -1,0 +1,27 @@
+[[extend 'layout.html']]
+
+<div class="section">
+    <!-- Put here your Vue.js template -->
+  
+    <h1 class="title pollarTitle">Pollar.io</h1>
+    <div>Please Select the state you live at</div>  
+</div>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Interactive Map</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi7w2HHFOK-TW76CHUSq6yto5wUthzels"></script>
+  <link rel="stylesheet" type="text/css" href="css/mapstyle.css">
+</head>
+<body>
+  <div id="map"></div>
+</body>
+</html>
+
+[[block page_scripts]]
+<script>
+  let get_state_url = "[[=XML(get_state_url)]]";
+</script>
+<script src="js/mapindex.js"></script>
+[[end]]
