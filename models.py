@@ -39,15 +39,13 @@ db.define_table(
     'results',
     Field('email'),
     Field('answer_id'),
-    Field('zip_code'),
+    Field('state'),
 )
 
 db.define_table(
-    'zip_codes',
+    'userStates',
     Field('user_id', default=get_user_id),
-    Field('zip_code', 'integer', requires=IS_INT_IN_RANGE(0, 1e6)),
+    Field('stateName'),
 )
-
-db.zip_codes.user_id.readable = db.zip_codes.user_id.writable = False
 
 db.commit()
