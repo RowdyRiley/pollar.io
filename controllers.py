@@ -58,6 +58,7 @@ def index():
         my_callback_url = URL('my_callback', signer=url_signer),
         get_qa_url = URL('get_qa', signer=url_signer),
         get_state_url = URL('get_state', signer=url_signer),
+        submit_answer = URL('submit_answer', signer=url_signer),
     )
 
 @action("get_qa")
@@ -117,6 +118,22 @@ def get_state():
     newState = db.userStates.insert(
             stateName = stateName,
         )
-    #Right now index is not being redirected.
-    
+    #Right now index is not being redirected.    
     return dict(new_url=URL('index', vars=dict(stateName=stateName)))
+
+@action('submit_answer', method="POST")
+@action.uses(db, url_signer.verify(), auth.user)
+def submit_answer():
+    user_id = auth.get_user()['id']
+    qa_id = request.json.get("qa_id")
+    answer_id = request.json.get("answer_id")
+    user_state = db(db.userStates.user_id == user_id).select().first()
+    if user_state:
+        state_name = user_state.stateName
+        db.results.insert(
+            user_id=user_id,
+            qa_id=qa_id,
+            answer_id=answer_id,
+            state=state_name,
+        )
+    return "OK"

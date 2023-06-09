@@ -35,6 +35,18 @@ let init = (app) => {
     app.methods = {
         // Complete as you see fit.
         get_qa: app.get_qa,
+        submitAnswer(qa_id, answer_id) {
+            axios.post(submit_answer, {
+                qa_id: qa_id,
+                answer_id: answer_id,
+            })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        },
     };
 
     // This creates the Vue instance.
