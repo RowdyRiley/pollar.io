@@ -12,11 +12,11 @@ path:hover {
   transform: scale(1.005, 1.005);
 }
 
-/* #map-container {
+ #map-container {
   display: flex;
   justify-content: center;
   align-items: center;
-} */
+} 
 
 #us-map {
   display: block;

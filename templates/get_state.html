@@ -7,21 +7,78 @@
     <div>Please Select the state you live at</div>  
 </div>
 
-<!DOCTYPE html>
-<html>
 <head>
-  <title>Interactive Map</title>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi7w2HHFOK-TW76CHUSq6yto5wUthzels"></script>
-  <link rel="stylesheet" type="text/css" href="css/mapstyle.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive US Map</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/mapstyle.css">
 </head>
 <body>
-  <div id="map"></div>
+  <div id="details-box"></div>
+
+  <div id="map-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.0/svg.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+    // Fetch the SVG file
+    fetch('us.svg')
+      .then(response => response.text())
+      .then(svgData => {
+        // Inject the SVG code into the map container
+        document.getElementById('map-container').innerHTML = svgData;
+      })
+      .catch(error => {
+        console.error('Failed to fetch SVG file:', error);
+      });
+  
+    var tooltipSpan = document.getElementById('details-box');
+
+    // Add event listener to detect when the user clicks on a state
+document.addEventListener('click', function(e) {
+  if (e.target.tagName == 'path') {
+    // Retrieve the selected state name
+    const stateName = e.target.getAttribute('data-name');
+
+    // Send the stateName to the controller to insert into the database
+    axios.post(get_state_url, { stateName: stateName })
+      .then(function(response) {
+        console.log('Selected state:', stateName);
+      });
+  }
+});
+
+  
+    document.addEventListener('mouseover', function(e) {
+      if (e.target.tagName == 'path') {
+        var content = e.target.dataset.name;
+        document.getElementById("details-box").innerHTML = content;
+        document.getElementById("details-box").style.opacity = "100%";
+      } else {
+        document.getElementById("details-box").style.opacity = "0%";
+      }
+    });
+  
+    window.onmousemove = function(e) {
+      var x = e.clientX,
+        y = e.clientY;
+      tooltipSpan.style.top = (y + 20) + 'px';
+      tooltipSpan.style.left = (x) + 'px';
+    };
+  </script>
+  
+
 </body>
-</html>
 
 [[block page_scripts]]
 <script>
   let get_state_url = "[[=XML(get_state_url)]]";
 </script>
-<script src="js/mapindex.js"></script>
+
 [[end]]
