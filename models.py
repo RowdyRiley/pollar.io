@@ -5,6 +5,8 @@ This file defines the database models
 import datetime
 from .common import db, Field, auth
 from pydal.validators import *
+import random
+from py4web.utils.populate import FIRST_NAMES, LAST_NAMES
 
 def get_user_email():
     return auth.current_user.get('email') if auth.current_user else None
@@ -37,8 +39,9 @@ db.define_table(
 
 db.define_table(
     'results',
-    Field('email'),
-    Field('answer_id'),
+    Field('qa_id', 'reference qa'),
+    Field('user_id', 'reference auth_user', default=get_user_id),
+    Field('answer_id', 'integer', requires=IS_INT_IN_RANGE(1, 4)),
     Field('state'),
 )
 
@@ -49,3 +52,36 @@ db.define_table(
 )
 
 db.commit()
+def add_users_for_testing(num_users):
+    # Test user names begin with "_".
+    # Counts how many users we need to add.
+    db(db.results).delete()
+    db(db.auth_user.email.startswith("_")).delete()
+    num_test_users = db(db.auth_user.email.startswith("_")).count()
+    num_new_users = num_users - num_test_users
+    print("Adding", num_new_users, "users.")
+    for k in range(num_test_users, num_users):
+        first_name = random.choice(FIRST_NAMES)
+        last_name = first_name = random.choice(LAST_NAMES)
+        username = "_%s%.2i" % (first_name.lower(), k)
+        user = dict(
+            email=username + "@ucsc.edu",
+            first_name=first_name,
+            last_name=last_name,
+            password=username,  # To facilitate testing.
+        )
+        user_id = auth.register(user, send=False)['id']
+        auth.register(user, send=False)
+        # Adds some content for each user.
+        for n in range(1):
+            r = dict(
+                user_id=user_id,
+                qa_id=random.randint(1,50),
+                answer_id=random.randint(1,4),
+                state="California",
+            )
+            db.results.insert(**r)
+    db.commit()
+# Comment out this line if you are not interested.
+add_users_for_testing(50)
+# Comment out this line if you are not interested.'''
