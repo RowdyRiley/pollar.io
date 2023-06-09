@@ -37,6 +37,7 @@ url_signer = URLSigner(session)
 @action('index')
 @action.uses('index.html', db, auth.user, url_signer)
 def index():
+    stateName = request.params.get("stateName")
     #get the id of the current user
     current_user_id = auth.current_user.get("id")
     #Get the zip code of the user
@@ -66,9 +67,17 @@ def get_qa():
 @action("second_page")
 @action.uses('second_page.html', db, auth.user, url_signer)
 def second_page():
-    #Does the same thing as get_qa for now because I can't just return ok without it ruining the html.
-    question_answer_database = db(db.qa).select().as_list()
-    return dict(qa=question_answer_database)
+    #get the id of the current user
+    current_user_id = auth.current_user.get("id")
+    current_user_stateName_database = db(db.userStates.user_id == current_user_id).select().first()
+    current_user_stateName = current_user_stateName_database.stateName
+
+    #Get results database and all the ones from current user statename and make sure qa id is the same as the one he answered.
+    #Afterwards do math from the answer ids. 
+    #Then return math.
+    return dict(
+        
+    )
 
 @action('get_state')
 @action.uses('get_state.html', db, url_signer, auth.user)
@@ -87,5 +96,5 @@ def get_state():
             stateName = stateName,
         )
     #Right now index is not being redirected.
-    redirect(URL('index'))
-    return dict(newState)
+    
+    return dict(new_url=URL('index', vars=dict(stateName=stateName)))

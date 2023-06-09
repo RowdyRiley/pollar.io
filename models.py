@@ -37,8 +37,9 @@ db.define_table(
 
 db.define_table(
     'results',
-    Field('email'),
-    Field('answer_id'),
+    Field('qa_id', 'reference qa'),
+    Field('user_id', default=get_user_id),
+    Field('answer_id', 'integer', requires=IS_INT_IN_RANGE(1, 4)),
     Field('state'),
 )
 

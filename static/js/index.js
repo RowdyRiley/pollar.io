@@ -30,7 +30,7 @@ let init = (app) => {
             app.vue.qa = response.data.qa;
         });
     };
-
+    
     // This contains all the methods.
     app.methods = {
         // Complete as you see fit.

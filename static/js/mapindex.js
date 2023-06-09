@@ -125,6 +125,7 @@ function initMap() {
     // Goes to the controller and sends it the stateName to insert into the database. 
     axios.post(get_state_url, {stateName: stateName}).then(function (response) {
       console.log('Selected state:', stateName);
+      window.location = response.data.new_url;
       });
   });
 
