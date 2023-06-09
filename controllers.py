@@ -34,6 +34,9 @@ from py4web.utils.form import Form, FormStyleBulma
 
 url_signer = URLSigner(session)
 
+#This is the question id that is currently being seen by everyone.
+current_question_id = 1
+
 @action('index')
 @action.uses('index.html', db, auth.user, url_signer)
 def index():
@@ -73,10 +76,29 @@ def second_page():
     current_user_stateName = current_user_stateName_database.stateName
 
     #Get results database and all the ones from current user statename and make sure qa id is the same as the one he answered.
+    results_database = db((db.results.state == current_user_stateName) &
+                          (db.results.qa_id == current_question_id)).select().as_list()
     #Afterwards do math from the answer ids. 
+    a1_count = 0
+    a2_count = 0
+    a3_count = 0
+    a4_count = 0
+    for r in results_database:
+        if r['answer_id'] == 1:
+            a1_count += 1
+        if r['answer_id'] == 2:
+            a2_count += 1
+        if r['answer_id'] == 3:
+            a3_count += 1
+        if r['answer_id'] == 4:
+            a4_count += 1
     #Then return math.
     return dict(
-        
+        a1_count=a1_count,
+        a2_count=a2_count,
+        a3_count=a3_count,
+        a4_count=a4_count,
+        current_user_stateName=current_user_stateName,
     )
 
 @action('get_state')
