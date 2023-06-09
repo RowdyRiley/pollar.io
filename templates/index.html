@@ -5,16 +5,6 @@
      display: none;
 }
 
-.pollarTitle {
-    text-align: center;
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 800;
-    font-size: 128px;
-    line-height: 155px;
-    margin-bottom: 50px;
-    color: #000000;
-  }
 
 #question {
   text-align: center;
@@ -57,6 +47,59 @@
 
 </div>
 
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive US Map</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/mapstyle.css">
+</head>
+<body>
+  <div id="details-box"></div>
+
+  <div id="map-container"></div>
+
+  <script>
+    // Fetch the SVG file
+    fetch('us.svg')
+      .then(response => response.text())
+      .then(svgData => {
+        // Inject the SVG code into the map container
+        document.getElementById('map-container').innerHTML = svgData;
+      })
+      .catch(error => {
+        console.error('Failed to fetch SVG file:', error);
+      });
+  </script>
+
+  <script>
+    var tooltipSpan = document.getElementById('details-box');
+
+    document.addEventListener('mouseover', function (e) {
+        if (e.target.tagName == 'path') {
+            var content = e.target.dataset.name;
+            document.getElementById("details-box").innerHTML = content;
+            document.getElementById("details-box").style.opacity = "100%";
+        }
+        else {
+            document.getElementById("details-box").style.opacity = "0%";
+        }
+    });
+
+    window.onmousemove = function (e) {
+        var x = e.clientX,
+            y = e.clientY;
+        tooltipSpan.style.top = (y + 20) + 'px';
+        tooltipSpan.style.left = (x) + 'px';
+    };
+</script>
+
+</body>
+
 
 [[block page_scripts]]
 <!-- Loads the index-specific js for Vue -->
@@ -66,4 +109,6 @@
   let get_state_url = "[[=XML(get_state_url)]]";
 </script>
 <script src="js/index.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.0/svg.min.js"></script>
 [[end]]
