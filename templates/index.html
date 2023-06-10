@@ -33,14 +33,15 @@
   <!-- Put here your Vue.js template -->
 
   <h1 class="pollarTitle">Pollar.io</h1>
+
   <template v-for="r in qa">
     <div class="centered-content" id="vue-target" v-cloak>
       <div id="question">{{r.question}}</div>
       <a id="answers" href="[[=URL('second_page')]]">
-        <button class="answer button is-link">{{r.answer1}}</button>
-        <button class="answer button is-danger">{{r.answer2}}</button>
-        <button class="answer button is-success">{{r.answer3}}</button>
-        <button class="answer button is-warning">{{r.answer4}}</button>
+        <button class="answer button is-link" @click="submitAnswer(r.id, 1)">{{r.answer1}}</button>
+        <button class="answer button is-danger" @click="submitAnswer(r.id, 2)">{{r.answer2}}</button>
+        <button class="answer button is-success" @click="submitAnswer(r.id, 3)">{{r.answer3}}</button>
+        <button class="answer button is-warning" @click="submitAnswer(r.id, 4)">{{r.answer4}}</button>
       </a>
     </div>
   </template>
@@ -109,6 +110,7 @@
   let my_callback_url = "[[=XML(my_callback_url)]]";
   let get_qa_url = "[[=XML(get_qa_url)]]";
   let get_state_url = "[[=XML(get_state_url)]]";
+  let submit_answer= "[[=XML(submit_answer)]]";
 </script>
 <script src="js/index.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

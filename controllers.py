@@ -34,9 +34,13 @@ from py4web.utils.form import Form, FormStyleBulma
 
 url_signer = URLSigner(session)
 
+#This is the question id that is currently being seen by everyone.
+current_question_id = 1
+
 @action('index')
 @action.uses('index.html', db, auth.user, url_signer)
 def index():
+    stateName = request.params.get("stateName")
     #get the id of the current user
     current_user_id = auth.current_user.get("id")
     #Get the zip code of the user
@@ -54,6 +58,7 @@ def index():
         my_callback_url = URL('my_callback', signer=url_signer),
         get_qa_url = URL('get_qa', signer=url_signer),
         get_state_url = URL('get_state', signer=url_signer),
+        submit_answer = URL('submit_answer', signer=url_signer),
     )
 
 @action("get_qa")
@@ -66,9 +71,36 @@ def get_qa():
 @action("second_page")
 @action.uses('second_page.html', db, auth.user, url_signer)
 def second_page():
-    #Does the same thing as get_qa for now because I can't just return ok without it ruining the html.
-    question_answer_database = db(db.qa).select().as_list()
-    return dict(qa=question_answer_database)
+    #get the id of the current user
+    current_user_id = auth.current_user.get("id")
+    current_user_stateName_database = db(db.userStates.user_id == current_user_id).select().first()
+    current_user_stateName = current_user_stateName_database.stateName
+
+    #Get results database and all the ones from current user statename and make sure qa id is the same as the one he answered.
+    results_database = db((db.results.state == current_user_stateName) &
+                          (db.results.qa_id == current_question_id)).select().as_list()
+    #Afterwards do math from the answer ids. 
+    a1_count = 0
+    a2_count = 0
+    a3_count = 0
+    a4_count = 0
+    for r in results_database:
+        if r['answer_id'] == 1:
+            a1_count += 1
+        if r['answer_id'] == 2:
+            a2_count += 1
+        if r['answer_id'] == 3:
+            a3_count += 1
+        if r['answer_id'] == 4:
+            a4_count += 1
+    #Then return math.
+    return dict(
+        a1_count=a1_count,
+        a2_count=a2_count,
+        a3_count=a3_count,
+        a4_count=a4_count,
+        current_user_stateName=current_user_stateName,
+    )
 
 @action('get_state')
 @action.uses('get_state.html', db, url_signer, auth.user)
@@ -86,6 +118,22 @@ def get_state():
     newState = db.userStates.insert(
             stateName = stateName,
         )
-    #Right now index is not being redirected.
-    redirect(URL('index'))
-    return dict(newState)
+    #Right now index is not being redirected.    
+    return dict(new_url=URL('index', vars=dict(stateName=stateName)))
+
+@action('submit_answer', method="POST")
+@action.uses(db, url_signer.verify(), auth.user)
+def submit_answer():
+    user_id = auth.get_user()['id']
+    qa_id = request.json.get("qa_id")
+    answer_id = request.json.get("answer_id")
+    user_state = db(db.userStates.user_id == user_id).select().first()
+    if user_state:
+        state_name = user_state.stateName
+        db.results.insert(
+            user_id=user_id,
+            qa_id=qa_id,
+            answer_id=answer_id,
+            state=state_name,
+        )
+    return "OK"
