@@ -30,11 +30,20 @@ let init = (app) => {
             app.vue.qa = response.data.qa;
         });
     };
+
+    app.get_next_question = function () {
+        console.log("GETTING NEXT QUESTION");
+        axios.get(get_next_question_url,).then(function (response) {
+            
+            app.get_qa();
+        });
+    };
     
     // This contains all the methods.
     app.methods = {
         // Complete as you see fit.
         get_qa: app.get_qa,
+        get_next_question: app.get_next_question,
         submitAnswer(qa_id, answer_id) {
             axios.post(submit_answer, {
                 qa_id: qa_id,
@@ -47,6 +56,7 @@ let init = (app) => {
                 console.log(error);
             });
         },
+        
     };
 
     // This creates the Vue instance.
@@ -61,6 +71,7 @@ let init = (app) => {
         // Put here any initialization code.
         // Typically this is a server GET call to load the data.
         app.get_qa();
+        // app.get_next_question();
     };
 
     // Call to the initializer.

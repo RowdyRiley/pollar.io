@@ -46,6 +46,7 @@
     </div>
   </template>
 
+  <button class="answer button is-warning" @click="get_next_question()">NEXT QUESTION</button>
 </div>
 
 <!DOCTYPE html>
@@ -104,6 +105,7 @@
 </body>
 </html>
 
+
 [[block page_scripts]]
 <!-- Loads the index-specific js for Vue -->
 <script>
@@ -111,6 +113,7 @@
   let get_qa_url = "[[=XML(get_qa_url)]]";
   let get_state_url = "[[=XML(get_state_url)]]";
   let submit_answer= "[[=XML(submit_answer)]]";
+  let get_next_question_url= "[[=XML(get_next_question_url)]]";
 </script>
 <script src="js/index.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
