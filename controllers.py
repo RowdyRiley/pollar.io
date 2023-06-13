@@ -38,7 +38,7 @@ url_signer = URLSigner(session)
 current_question_id = 1
 
 @action('index')
-@action.uses('index.html', db, auth.user, url_signer)
+@action.uses('index.html', db, auth.user, url_signer, session)
 def index():
     stateName = request.params.get("stateName")
     #get the id of the current user
@@ -59,6 +59,7 @@ def index():
         get_qa_url = URL('get_qa', signer=url_signer),
         get_state_url = URL('get_state', signer=url_signer),
         submit_answer = URL('submit_answer', signer=url_signer),
+        url_signer=url_signer,
     )
 
 @action("get_qa")
@@ -100,6 +101,7 @@ def second_page():
         a3_count=a3_count,
         a4_count=a4_count,
         current_user_stateName=current_user_stateName,
+        url_signer=url_signer,
     )
 
 @action('get_state')
@@ -137,3 +139,13 @@ def submit_answer():
             state=state_name,
         )
     return "OK"
+
+@action('delete_result')
+@action.uses(db, auth.user, url_signer.verify(), session, auth)
+def delete_result():
+    #get the id of the current user
+    current_user_id = auth.current_user.get("id")
+    #Delete that user's answer from the results table.
+    db(db.results.user_id == current_user_id).delete()
+    #Go back to index.
+    redirect(URL('index'))
