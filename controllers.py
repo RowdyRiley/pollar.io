@@ -29,13 +29,16 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email
+from .models import get_user_email, update_qa_id
 from py4web.utils.form import Form, FormStyleBulma
 
 url_signer = URLSigner(session)
 
-#This is the question id that is currently being seen by everyone.
+#This is the question id that is currently being seen by all users.
 current_question_id = 1
+
+#This is the maximum number of questions
+max_questions = 3
 
 @action('index')
 @action.uses('index.html', db, auth.user, url_signer)
@@ -59,14 +62,38 @@ def index():
         get_qa_url = URL('get_qa', signer=url_signer),
         get_state_url = URL('get_state', signer=url_signer),
         submit_answer = URL('submit_answer', signer=url_signer),
+        get_next_question_url = URL('get_next_question', signer=url_signer),
     )
 
 @action("get_qa")
 @action.uses(db, auth.user, url_signer.verify())
 def get_qa():
+    global current_question_id
+    global max_questions
     #Select all of the questions from the database and return it.
-    question_answer_database = db(db.qa).select().as_list()
+    question_answer_database = db(db.qa.id==current_question_id).select().as_list()
+    # question_answer_database = db(db.qa).select().first()
     return dict(qa=question_answer_database)
+
+@action("get_next_question")
+@action.uses(db, auth.user, url_signer.verify())
+def get_next_question():
+    # print("INCREMENTING QUESTION ID")
+
+    #Must define global variable within the function when using global variables
+    global current_question_id
+
+    #If the current_question_id is less than the maximum number of questions, set the current_question_id to the next question in the database
+    if(current_question_id < max_questions):
+        current_question_id = current_question_id + 1
+        update_qa_id(current_question_id)
+        return "ok"
+
+    #If the current_question_id is the last question set the current_question_id to be 1 (works like a circular array)
+    if(current_question_id >= max_questions):
+        current_question_id = 1
+        update_qa_id(current_question_id)
+        return "ok"
 
 @action("second_page")
 @action.uses('second_page.html', db, auth.user, url_signer)
