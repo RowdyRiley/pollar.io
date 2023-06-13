@@ -14,6 +14,8 @@ let init = (app) => {
         qa: [],
         //This should hold only a single question so it can be displayed to the user.
         single_qa: [],
+        //This stores all the counts of the results table
+        vote_count: 0,
     };
 
     app.enumerate = (a) => {
@@ -28,6 +30,7 @@ let init = (app) => {
         axios.get(get_qa_url,).then(function (response) {
             app.enumerate(response.data.qa);
             app.vue.qa = response.data.qa;
+            app.vue.vote_count = response.data.vote_count;
         });
     };
 

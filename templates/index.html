@@ -43,7 +43,7 @@
   <!-- Put here your Vue.js template -->
 
   <h1 class="pollarTitle">Pollar.io</h1>
-
+  <div>Live Total Number of Votes: {{vote_count}}</div>
   <template v-for="r in qa">
     <div class="centered-content" id="vue-target" v-cloak>
       <div id="question">{{r.question}}</div>

@@ -74,7 +74,9 @@ def get_qa():
     #Select all of the questions from the database and return it.
     question_answer_database = db(db.qa.id==current_question_id).select().as_list()
     # question_answer_database = db(db.qa).select().first()
-    return dict(qa=question_answer_database)
+    #This gets the count of all the results
+    vote_count = db(db.results).count()
+    return dict(qa=question_answer_database, vote_count=vote_count)
 
 @action("get_next_question")
 @action.uses(db, auth.user, url_signer.verify())
