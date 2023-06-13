@@ -21,6 +21,17 @@ def get_user_id():
 def get_time():
     return datetime.datetime.utcnow()
 
+#Function that takes the model's current question ID and updates it to be the same as the controller's current question ID
+def update_qa_id(controllers_current_question_id):
+    global models_current_qestion_id
+    models_current_qestion_id = controllers_current_question_id
+    add_users_for_testing(NUM_USERS)
+    return
+
+#GLOBAL VARIABLES
+models_current_qestion_id = 1       #Default question_id_is set to 1 (First question in the qa database)
+NUM_USERS = 50                      #Number of test users to add into the database
+
 
 ### Define your table below
 #
@@ -76,12 +87,12 @@ def add_users_for_testing(num_users):
         for n in range(1):
             r = dict(
                 user_id=user_id,
-                qa_id=random.randint(1,50),
+                qa_id=models_current_qestion_id,
                 answer_id=random.randint(1,4),
                 state="California",
             )
             db.results.insert(**r)
     db.commit()
 # Comment out this line if you are not interested.
-add_users_for_testing(50)
+add_users_for_testing(NUM_USERS)
 # Comment out this line if you are not interested.'''
