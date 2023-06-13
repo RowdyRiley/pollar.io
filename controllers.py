@@ -63,6 +63,7 @@ def index():
         get_state_url = URL('get_state', signer=url_signer),
         submit_answer = URL('submit_answer', signer=url_signer),
         get_next_question_url = URL('get_next_question', signer=url_signer),
+        get_stats_url = URL('get_stats', signer=url_signer),
     )
 
 @action("get_qa")
@@ -164,3 +165,41 @@ def submit_answer():
             state=state_name,
         )
     return "OK"
+
+@action("get_stats", method=["GET", "POST"])
+@action.uses(db, auth.user, url_signer.verify())
+def get_stats():
+    state_name = request.params.get("stateName")
+
+    # Call the state statistics function to get the statistics
+    state_statistics = calculate_state_statistics(state_name)
+
+    return dict(state_statistics=state_statistics)
+
+def calculate_state_statistics(state_name):
+    results_database = db((db.results.state == state_name) &
+                          (db.results.qa_id == current_question_id)).select().as_list()
+
+    # Get the question associated with the current question ID
+    question = db.qa(current_question_id).question
+
+    # Get the answer fields from the qa table
+    answer_fields = ['answer1', 'answer2', 'answer3', 'answer4']
+    answer_mapping = {i + 1: db.qa(current_question_id)[field] for i, field in enumerate(answer_fields)}
+
+    # Calculate the statistics
+    answer_counts = {answer_id: 0 for answer_id in answer_mapping.keys()}
+    for r in results_database:
+        answer_id = r['answer_id']
+        if answer_id in answer_counts:
+            answer_counts[answer_id] += 1
+
+    # Generate the state statistics dictionary with answer counts and text answers
+    state_statistics = {
+        'state_name': state_name,
+        'question': question,
+        'answer_counts': answer_counts,
+        'text_answers': {answer_id: answer_mapping[answer_id] for answer_id in answer_counts.keys()}
+    }
+
+    return state_statistics

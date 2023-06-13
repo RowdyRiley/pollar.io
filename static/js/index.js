@@ -14,6 +14,7 @@ let init = (app) => {
         qa: [],
         //This should hold only a single question so it can be displayed to the user.
         single_qa: [],
+
     };
 
     app.enumerate = (a) => {
@@ -38,12 +39,25 @@ let init = (app) => {
             app.get_qa();
         });
     };
+
+    app.get_state_statistics = (stateName) => {
+        const url = get_stats_url; // Replace with the URL to retrieve user meows
+      
+        axios.get(url, { params: { stateName: stateName } })
+          .then((response) => {
+            app.vue.stateStatistics = response.data.state_statistics;
+          })
+          .catch((error) => {
+            console.error("An error occurred:", error);
+          });
+      };
     
     // This contains all the methods.
     app.methods = {
         // Complete as you see fit.
         get_qa: app.get_qa,
         get_next_question: app.get_next_question,
+        get_state_statistics: app.get_state_statistics,
         submitAnswer(qa_id, answer_id) {
             axios.post(submit_answer, {
                 qa_id: qa_id,

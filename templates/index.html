@@ -26,6 +26,10 @@
     align-items: center;
     justify-content: center;
   }
+  #scroll-text {
+    opacity: 1;
+  transition: opacity 0.4s ease;
+}
 </style>
 
 
@@ -50,7 +54,9 @@
 </div>
 
 <!DOCTYPE html>
+<div>
 <html>
+  
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -63,7 +69,8 @@
   <link rel="stylesheet" href="css/mapstyle.css">
 </head>
 <body>
-  <div id="details-box"></div>
+  <h1 id="scroll-text"class="Title">Scroll down to see results across the U.S.</h1>
+  <div id="glossary-box"></div>
 
   <div id="map-container"></div>
 
@@ -81,18 +88,41 @@
   </script>
 
   <script>
-    var tooltipSpan = document.getElementById('details-box');
+    var tooltipSpan = document.getElementById('glossary-box');
 
     document.addEventListener('mouseover', function (e) {
-        if (e.target.tagName == 'path') {
-            var content = e.target.dataset.name;
-            document.getElementById("details-box").innerHTML = content;
-            document.getElementById("details-box").style.opacity = "100%";
-        }
-        else {
-            document.getElementById("details-box").style.opacity = "0%";
-        }
-    });
+    if (e.target.tagName == 'path') {
+        var stateName = e.target.dataset.name;
+
+        // Make an AJAX request to retrieve the state statistics
+        axios.post(get_stats_url, { stateName: stateName })
+            .then(function (response) {
+                var stateStatistics = response.data.state_statistics;
+                var answerCounts = stateStatistics.answer_counts;
+                var textAnswers = stateStatistics.text_answers;
+
+                var content = '<strong style="color: white;">' + stateName + '</strong><br>';
+                for (var answerId in answerCounts) {
+                    if (answerCounts.hasOwnProperty(answerId)) {
+                        var answerCount = answerCounts[answerId];
+                        var textAnswer = textAnswers[answerId];
+                        content += '<span>' + textAnswer + ' - ' + answerCount + ' votes</span><br>';
+                    }
+                }
+                // Remove the trailing comma and space
+                content = content.slice(0, -2);
+
+                tooltipSpan.innerHTML = content;
+                tooltipSpan.style.opacity = "100%";
+            })
+            .catch(function (error) {
+                console.error('Failed to retrieve state statistics:', error);
+            });
+    } else {
+        tooltipSpan.style.opacity = "0%";
+    }
+});
+
 
     window.onmousemove = function (e) {
         var x = e.clientX,
@@ -100,11 +130,25 @@
         tooltipSpan.style.top = (y + 20) + 'px';
         tooltipSpan.style.left = (x) + 'px';
     };
+    window.onscroll = function() {
+      var scrollText = document.getElementById('scroll-text');
+      var scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (scrollPosition > 500) {
+        scrollText.innerHTML = 'Results across U.S.';
+        scrollText.style.opacity = "1";
+      } else if (scrollPosition < 500 && scrollPosition > 400) {
+        scrollText.style.opacity = "0";
+      } else if (scrollPosition < 400){
+        scrollText.innerHTML = 'Scroll down to see results across the U.S.';
+        scrollText.style.opacity = "1";
+      }
+    };
 </script>
 
 </body>
 </html>
-
+</div>
 
 [[block page_scripts]]
 <!-- Loads the index-specific js for Vue -->
@@ -114,6 +158,7 @@
   let get_state_url = "[[=XML(get_state_url)]]";
   let submit_answer= "[[=XML(submit_answer)]]";
   let get_next_question_url= "[[=XML(get_next_question_url)]]";
+  let get_stats_url= "[[=XML(get_stats_url)]]";
 </script>
 <script src="js/index.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

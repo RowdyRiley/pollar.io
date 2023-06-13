@@ -50,6 +50,7 @@ document.addEventListener('click', function(e) {
     axios.post(get_state_url, { stateName: stateName })
       .then(function(response) {
         console.log('Selected state:', stateName);
+        window.location.href = "[[=URL('index')]]";
       });
   }
 });
