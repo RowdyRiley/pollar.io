@@ -58,7 +58,7 @@ db.define_table(
 
 db.define_table(
     'userStates',
-    Field('user_id', default=get_user_id),
+    Field('user_id', 'reference auth_user', default=get_user_id),
     Field('stateName', requires=IS_NOT_EMPTY()),
 )
 

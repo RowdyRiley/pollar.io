@@ -64,7 +64,6 @@ let init = (app) => {
         // Complete as you see fit.
         get_qa: app.get_qa,
         get_next_question: app.get_next_question,
-        set_add_status: app.set_add_status,
         get_state_statistics: app.get_state_statistics,
         submitAnswer(qa_id, answer_id) {
             axios.post(submit_answer, {
