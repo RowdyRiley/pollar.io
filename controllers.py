@@ -38,15 +38,15 @@ url_signer = URLSigner(session)
 current_question_id = 1
 
 #This is the maximum number of questions
-max_questions = 4
+max_questions = 10
 
 @action('index')
-@action.uses('index.html', db, auth.user, url_signer)
+@action.uses('index.html', db, auth.user, url_signer, session)
 def index():
     stateName = request.params.get("stateName")
     #get the id of the current user
     current_user_id = auth.current_user.get("id")
-    #Get the zip code of the user
+    #Get the state of the user
     user_state = db(db.userStates.user_id == current_user_id).select().first()
 
     #Check if there is a zipcode for the user 
@@ -62,7 +62,9 @@ def index():
         get_qa_url = URL('get_qa', signer=url_signer),
         get_state_url = URL('get_state', signer=url_signer),
         submit_answer = URL('submit_answer', signer=url_signer),
+        url_signer=url_signer,
         get_next_question_url = URL('get_next_question', signer=url_signer),
+        get_stats_url = URL('get_stats', signer=url_signer),
     )
 
 @action("get_qa")
@@ -73,7 +75,9 @@ def get_qa():
     #Select all of the questions from the database and return it.
     question_answer_database = db(db.qa.id==current_question_id).select().as_list()
     # question_answer_database = db(db.qa).select().first()
-    return dict(qa=question_answer_database)
+    #This gets the count of all the results
+    vote_count = db(db.results).count()
+    return dict(qa=question_answer_database, vote_count=vote_count)
 
 @action("get_next_question")
 @action.uses(db, auth.user, url_signer.verify())
@@ -127,6 +131,7 @@ def second_page():
         a3_count=a3_count,
         a4_count=a4_count,
         current_user_stateName=current_user_stateName,
+        url_signer=url_signer,
     )
 
 @action('get_state')
@@ -164,3 +169,51 @@ def submit_answer():
             state=state_name,
         )
     return "OK"
+
+@action('delete_result')
+@action.uses(db, auth.user, url_signer.verify(), session, auth)
+def delete_result():
+    #get the id of the current user
+    current_user_id = auth.current_user.get("id")
+    #Delete that user's answer from the results table.
+    db(db.results.user_id == current_user_id).delete()
+    #Go back to index.
+    redirect(URL('index'))
+
+@action("get_stats", method=["GET", "POST"])
+@action.uses(db, auth.user, url_signer.verify())
+def get_stats():
+    state_name = request.params.get("stateName")
+
+    # Call the state statistics function to get the statistics
+    state_statistics = calculate_state_statistics(state_name)
+
+    return dict(state_statistics=state_statistics)
+
+def calculate_state_statistics(state_name):
+    results_database = db((db.results.state == state_name) &
+                          (db.results.qa_id == current_question_id)).select().as_list()
+
+    # Get the question associated with the current question ID
+    question = db.qa(current_question_id).question
+
+    # Get the answer fields from the qa table
+    answer_fields = ['answer1', 'answer2', 'answer3', 'answer4']
+    answer_mapping = {i + 1: db.qa(current_question_id)[field] for i, field in enumerate(answer_fields)}
+
+    # Calculate the statistics
+    answer_counts = {answer_id: 0 for answer_id in answer_mapping.keys()}
+    for r in results_database:
+        answer_id = r['answer_id']
+        if answer_id in answer_counts:
+            answer_counts[answer_id] += 1
+
+    # Generate the state statistics dictionary with answer counts and text answers
+    state_statistics = {
+        'state_name': state_name,
+        'question': question,
+        'answer_counts': answer_counts,
+        'text_answers': {answer_id: answer_mapping[answer_id] for answer_id in answer_counts.keys()}
+    }
+
+    return state_statistics

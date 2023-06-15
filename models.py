@@ -41,11 +41,11 @@ NUM_USERS = 50                      #Number of test users to add into the databa
 
 db.define_table(
     'qa',
-    Field('answer1'),
-    Field('answer2'),
-    Field('answer3'),
-    Field('answer4'),
-    Field('question'),
+    Field('answer1', requires=IS_NOT_EMPTY()),
+    Field('answer2', requires=IS_NOT_EMPTY()),
+    Field('answer3', requires=IS_NOT_EMPTY()),
+    Field('answer4', requires=IS_NOT_EMPTY()),
+    Field('question', requires=IS_NOT_EMPTY()),
 )
 
 db.define_table(
@@ -53,13 +53,13 @@ db.define_table(
     Field('qa_id', 'reference qa'),
     Field('user_id', 'reference auth_user', default=get_user_id),
     Field('answer_id', 'integer', requires=IS_INT_IN_RANGE(1, 4)),
-    Field('state'),
+    Field('state', requires=IS_NOT_EMPTY()),
 )
 
 db.define_table(
     'userStates',
     Field('user_id', default=get_user_id),
-    Field('stateName'),
+    Field('stateName', requires=IS_NOT_EMPTY()),
 )
 
 db.commit()
@@ -95,4 +95,5 @@ def add_users_for_testing(num_users):
     db.commit()
 # Comment out this line if you are not interested.
 add_users_for_testing(NUM_USERS)
+# Comment out this line if you are not interested.'''
 # Comment out this line if you are not interested.'''

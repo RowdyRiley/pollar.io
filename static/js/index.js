@@ -12,8 +12,8 @@ let init = (app) => {
         // Complete as you see fit.
         //Contains all the database questions
         qa: [],
-        //This should hold only a single question so it can be displayed to the user.
-        single_qa: [],
+        //This stores all the counts of the results table
+        vote_count: 0,
     };
 
     app.enumerate = (a) => {
@@ -28,6 +28,14 @@ let init = (app) => {
         axios.get(get_qa_url,).then(function (response) {
             app.enumerate(response.data.qa);
             app.vue.qa = response.data.qa;
+            app.vue.vote_count = response.data.vote_count;
+        });
+    };
+
+    //This will go to the controller and gets the mode
+    app.get_mode = function () {
+        axios.get(get_mode_url,).then(function (response) {
+            app.vue.main_mode = response.data.main_mode;
         });
     };
 
@@ -38,12 +46,26 @@ let init = (app) => {
             app.get_qa();
         });
     };
+
+    app.get_state_statistics = (stateName) => {
+        const url = get_stats_url; // Replace with the URL to retrieve user meows
+      
+        axios.get(url, { params: { stateName: stateName } })
+          .then((response) => {
+            app.vue.stateStatistics = response.data.state_statistics;
+          })
+          .catch((error) => {
+            console.error("An error occurred:", error);
+          });
+      };
     
     // This contains all the methods.
     app.methods = {
         // Complete as you see fit.
         get_qa: app.get_qa,
         get_next_question: app.get_next_question,
+        set_add_status: app.set_add_status,
+        get_state_statistics: app.get_state_statistics,
         submitAnswer(qa_id, answer_id) {
             axios.post(submit_answer, {
                 qa_id: qa_id,
@@ -56,7 +78,6 @@ let init = (app) => {
                 console.log(error);
             });
         },
-        
     };
 
     // This creates the Vue instance.
@@ -71,7 +92,6 @@ let init = (app) => {
         // Put here any initialization code.
         // Typically this is a server GET call to load the data.
         app.get_qa();
-        // app.get_next_question();
     };
 
     // Call to the initializer.
