@@ -38,7 +38,7 @@ url_signer = URLSigner(session)
 current_question_id = 1
 
 #This is the maximum number of questions
-max_questions = 4
+max_questions = 10
 
 @action('index')
 @action.uses('index.html', db, auth.user, url_signer, session)
