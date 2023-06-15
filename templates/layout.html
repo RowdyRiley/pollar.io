@@ -11,6 +11,26 @@
     
     <!-- Styling added here for the background color and "Pollar.io" header text -->
     <style>
+      .pollarTitle {
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 128px;
+    line-height: 155px;
+    margin-bottom: 50px;
+    color: #000000;
+  }
+  .Title {
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 35px;
+    line-height: 155px;
+    margin-bottom: 50px;
+    color: #7a7a7a;
+  }
       html, body {
         height: 100%;
       }
@@ -20,8 +40,13 @@
       .hero-body {
         flex-grow: 1;
       }
+      body {
+        display: flex;
+        flex-direction: column;
+      }
       .custom-background {
         background-color: #FCF9F2;
+        flex-grow: 1;
       }
 
 
@@ -29,7 +54,7 @@
 <!-- Styling added here for the background color and "Pollar.io" header text -->
 
   </head>
-  <body class="custom-background">
+  <body>
     <!-- Navigation bar -->
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
@@ -78,7 +103,10 @@
     </nav>
 
     <!-- beginning of HTML inserted by extending template -->
-    [[include]]
+    <div class="custom-background">
+      [[include]]
+    </div>
+    
     <!-- end of HTML inserted by extending template -->
 
     <!-- <footer class="footer">
