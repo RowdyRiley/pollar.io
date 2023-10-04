@@ -1,0 +1,57 @@
+[[extend 'layout.html']]
+
+<style>
+    
+    .pollarTitle {
+        text-align: center;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 128px;
+        line-height: 155px;
+        margin-bottom: 50px;
+        color: #000000;
+      }
+    
+    #question {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 100px;
+    }
+    
+    #answers {
+      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 100px;
+      padding: 0 350px;
+    }
+    
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+
+<div class="section">
+  <!-- Put here your Vue.js template -->
+
+  <h1 class="pollarTitle">Pollar.io</h1>
+  <!-- <div>This is the second Page</div> -->
+  <div class="centered-content">
+    <div id="question">[[=current_user_stateName]] Statistics</div>
+    <div id="answers">
+        <tag class="answer tag is-large is-link">Answer 1: [[=a1_count]] votes</tag>
+        <tag class="answer tag is-large is-danger">Answer 2: [[=a2_count]] votes</tag>
+        <tag class="answer tag is-large is-success">Answer 3: [[=a3_count]] votes</tag>
+        <tag class="answer tag is-large is-warning">Answer 4: [[=a4_count]] votes</tag>
+    </div>
+    
+  </div>
+  <a href="[[=URL('delete_result', signer=url_signer)]]">
+    <button class="button is-primary">Back</button>
+  </a>
+  
+</div> c38913e47344f572b5b560052b55552f47234872

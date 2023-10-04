@@ -1,0 +1,165 @@
+[[extend 'layout.html']]
+
+<style>
+[v-cloak] {
+     display: none;
+}
+
+
+#question {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 100px;
+}
+
+#answers {
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 100px;
+  padding: 0 350px;
+}
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #scroll-text {
+    opacity: 1;
+  transition: opacity 0.4s ease;
+}
+</style>
+
+
+<div class="section" id="vue-target" v-cloak>
+  <!-- Put here your Vue.js template -->
+
+  <h1 class="pollarTitle">Pollar.io</h1>
+  <div>Live Total Number of Votes for this Question: {{vote_count}}</div>
+  <template v-for="r in qa">
+    <div class="centered-content" id="vue-target" v-cloak>
+      <div id="question">{{r.question}}</div>
+      <a id="answers" href="[[=URL('second_page')]]">
+        <button class="answer button is-link" @click="submitAnswer(r.id, 1)">{{r.answer1}}</button>
+        <button class="answer button is-danger" @click="submitAnswer(r.id, 2)">{{r.answer2}}</button>
+        <button class="answer button is-success" @click="submitAnswer(r.id, 3)">{{r.answer3}}</button>
+        <button class="answer button is-warning" @click="submitAnswer(r.id, 4)">{{r.answer4}}</button>
+    </div>
+  </template>
+
+  <button class="answer button is-warning" @click="get_next_question()">NEXT QUESTION</button>
+</div>
+
+<!DOCTYPE html>
+<div>
+<html>
+  
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive US Map</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/mapstyle.css">
+</head>
+<body>
+  <h1 id="scroll-text"class="Title">Scroll down to see results across the U.S.</h1>
+  <div id="glossary-box"></div>
+
+  <div id="map-container"></div>
+
+  <script>
+    // Fetch the SVG file
+    fetch('us.svg')
+      .then(response => response.text())
+      .then(svgData => {
+        // Inject the SVG code into the map container
+        document.getElementById('map-container').innerHTML = svgData;
+      })
+      .catch(error => {
+        console.error('Failed to fetch SVG file:', error);
+      });
+  </script>
+
+  <script>
+    var tooltipSpan = document.getElementById('glossary-box');
+
+    document.addEventListener('mouseover', function (e) {
+    if (e.target.tagName == 'path') {
+        var stateName = e.target.dataset.name;
+
+        // Make an AJAX request to retrieve the state statistics
+        axios.post(get_stats_url, { stateName: stateName })
+            .then(function (response) {
+                var stateStatistics = response.data.state_statistics;
+                var answerCounts = stateStatistics.answer_counts;
+                var textAnswers = stateStatistics.text_answers;
+
+                var content = '<strong style="color: white;">' + stateName + '</strong><br>';
+                for (var answerId in answerCounts) {
+                    if (answerCounts.hasOwnProperty(answerId)) {
+                        var answerCount = answerCounts[answerId];
+                        var textAnswer = textAnswers[answerId];
+                        content += '<span>' + textAnswer + ' - ' + answerCount + ' votes</span><br>';
+                    }
+                }
+                // Remove the trailing comma and space
+                content = content.slice(0, -2);
+
+                tooltipSpan.innerHTML = content;
+                tooltipSpan.style.opacity = "100%";
+            })
+            .catch(function (error) {
+                console.error('Failed to retrieve state statistics:', error);
+            });
+    } else {
+        tooltipSpan.style.opacity = "0%";
+    }
+});
+
+
+    window.onmousemove = function (e) {
+        var x = e.clientX,
+            y = e.clientY;
+        tooltipSpan.style.top = (y + 20) + 'px';
+        tooltipSpan.style.left = (x) + 'px';
+    };
+    window.onscroll = function() {
+      var scrollText = document.getElementById('scroll-text');
+      var scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (scrollPosition > 500) {
+        scrollText.innerHTML = 'Results across U.S.';
+        scrollText.style.opacity = "1";
+      } else if (scrollPosition < 500 && scrollPosition > 400) {
+        scrollText.style.opacity = "0";
+      } else if (scrollPosition < 400){
+        scrollText.innerHTML = 'Scroll down to see results across the U.S.';
+        scrollText.style.opacity = "1";
+      }
+    };
+</script>
+
+</body>
+</html>
+</div>
+
+[[block page_scripts]]
+<!-- Loads the index-specific js for Vue -->
+<script>
+  let my_callback_url = "[[=XML(my_callback_url)]]";
+  let get_qa_url = "[[=XML(get_qa_url)]]";
+  let get_state_url = "[[=XML(get_state_url)]]";
+  let submit_answer= "[[=XML(submit_answer)]]";
+  let get_next_question_url= "[[=XML(get_next_question_url)]]";
+  let get_stats_url= "[[=XML(get_stats_url)]]";
+</script>
+<script src="js/index.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.0/svg.min.js"></script>
+[[end]]

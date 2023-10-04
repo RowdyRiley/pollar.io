@@ -1,0 +1,56 @@
+timestamp: 2023-10-03T19:45:23.829316
+CREATE TABLE "py4web_session"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "rkey" CHAR(512),
+    "rvalue" TEXT,
+    "expiration" INTEGER,
+    "created_on" TIMESTAMP,
+    "expires_on" TIMESTAMP
+);
+success!
+timestamp: 2023-10-03T19:45:23.834462
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "email" CHAR(512) UNIQUE,
+    "password" CHAR(512),
+    "first_name" CHAR(512),
+    "last_name" CHAR(512),
+    "sso_id" CHAR(512),
+    "action_token" CHAR(512),
+    "last_password_change" TIMESTAMP,
+    "past_passwords_hash" TEXT
+);
+success!
+timestamp: 2023-10-03T19:45:23.839375
+CREATE TABLE "auth_user_tag_groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "tagpath" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2023-10-03T19:45:23.842263
+CREATE TABLE "qa"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "answer1" CHAR(512),
+    "answer2" CHAR(512),
+    "answer3" CHAR(512),
+    "answer4" CHAR(512),
+    "question" CHAR(512)
+);
+success!
+timestamp: 2023-10-03T19:45:23.846692
+CREATE TABLE "results"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "qa_id" INTEGER REFERENCES "qa" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "answer_id" INTEGER,
+    "state" CHAR(512)
+);
+success!
+timestamp: 2023-10-03T19:45:23.852280
+CREATE TABLE "userStates"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "statename" CHAR(512)
+);
+success!
