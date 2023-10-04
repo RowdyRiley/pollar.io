@@ -66,8 +66,8 @@ db.commit()
 def add_users_for_testing(num_users):
     # Test user names begin with "_".
     # Counts how many users we need to add.
-    db(db.results).delete()
     db(db.auth_user.email.startswith("_")).delete()
+    db(db.results).delete()
     num_test_users = db(db.auth_user.email.startswith("_")).count()
     num_new_users = num_users - num_test_users
     print("Adding", num_new_users, "users.")
@@ -82,7 +82,6 @@ def add_users_for_testing(num_users):
             password=username,  # To facilitate testing.
         )
         user_id = auth.register(user, send=False)['id']
-        auth.register(user, send=False)
         # Adds some content for each user.
         for n in range(1):
             r = dict(
